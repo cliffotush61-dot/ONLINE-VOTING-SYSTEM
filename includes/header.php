@@ -1,40 +1,34 @@
 <?php
 // Safe session start — prevents duplicate session warnings
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/app_config.php';
+evote_boot_session();
+
+$admin_nav_href = (($_SESSION['role'] ?? '') === 'admin' && isset($_SESSION['admin_id']))
+    ? 'admin_dashboard.php'
+    : 'admin_login.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Secure Voting System</title>
-
-    <!-- Correct CSS path -->
-    <link rel="stylesheet" type="text/css" href="/voting_system/assets/css/style.css">
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKjG9DpS_XhtP_Km-LpGJXoWESlsIwz07Uo0sHbFYC_w&s" alt="Voting System Logo" style="height:50px;">
-
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
-
 <body>
-    <header>
-        <h1>Secure Online Voting System</h1>
-
-        <nav>
-            <a href="/voting_system/index.php">Home</a> |
-            <a href="/voting_system/frontend/register.html">Register</a> |
-            <a href="/voting_system/frontend/login.html">Login</a> |
-            <a href="/voting_system/frontend/vote.html">Vote</a> |
-            <a href="/voting_system/frontend/results.html">Results</a> |
-            <a href="/voting_system/frontend/admin_login.html">Admin</a>
-
+    <header class="topbar">
+        <div class="brand">Secure Voting System</div>
+        <div class="topbar-links">
+            <a href="index.php">Home</a>
+            <a href="index.php#elections">Elections</a>
+            <a href="index.php#how-it-works">How It Works</a>
+            <a href="login.php">Login</a>
+            <a href="register.php">Register</a>
+            <a href="<?php echo htmlspecialchars($admin_nav_href); ?>">Admin</a>
             <?php
-            // Show logout only when logged in
-            if (isset($_SESSION['student_id']) || isset($_SESSION['admin'])) {
-                echo ' | <a href="/voting_system/backend/logout.php">Logout</a>';
+            if (isset($_SESSION['student_id']) || isset($_SESSION['admin_id'])) {
+                echo '<a href="logout.php" class="btn-logout">Logout</a>';
             }
             ?>
-        </nav>
+        </div>
     </header>
-
     <main>
