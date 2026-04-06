@@ -2,7 +2,8 @@
 if (!defined('EVOTE_APP_CONFIG_LOADED')) {
     define('EVOTE_APP_CONFIG_LOADED', true);
 
-    date_default_timezone_set('Africa/Nairobi');
+    $appTimezone = getenv('APP_TIMEZONE');
+    date_default_timezone_set($appTimezone !== false && $appTimezone !== '' ? $appTimezone : 'Africa/Nairobi');
 
     if (!defined('EVOTE_HASH_SECRET')) {
         $envSecret = getenv('EVOTE_HASH_SECRET');

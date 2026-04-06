@@ -1,0 +1,14 @@
+.git
+.gitignore
+.vscode
+.idea
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+node_modules
+npm-debug.log
+php_errors.log
+.env
+.env.local
