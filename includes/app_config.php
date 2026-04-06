@@ -5,6 +5,12 @@ if (!defined('EVOTE_APP_CONFIG_LOADED')) {
     $appTimezone = getenv('APP_TIMEZONE');
     date_default_timezone_set($appTimezone !== false && $appTimezone !== '' ? $appTimezone : 'Africa/Nairobi');
 
+    $appEnv = strtolower((string) (getenv('APP_ENV') !== false ? getenv('APP_ENV') : 'production'));
+    $displayErrors = in_array($appEnv, ['local', 'dev', 'development', 'staging'], true) ? '1' : '0';
+    ini_set('display_errors', $displayErrors);
+    ini_set('display_startup_errors', $displayErrors);
+    error_reporting(E_ALL);
+
     if (!defined('EVOTE_HASH_SECRET')) {
         $envSecret = getenv('EVOTE_HASH_SECRET');
         define('EVOTE_HASH_SECRET', $envSecret !== false && $envSecret !== '' ? $envSecret : 'CHANGE-ME-IN-PRODUCTION-2026');

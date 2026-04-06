@@ -22,5 +22,7 @@ services:
         sync: false
       - key: DB_USER
         sync: false
-      - key: DB_PASSWORD
+      - key: DB_PASS
         sync: false
+      - key: APP_ENV
+        value: production

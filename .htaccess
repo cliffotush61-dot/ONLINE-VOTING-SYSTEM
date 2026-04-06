@@ -1,0 +1,14 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^config\.php$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^(render\.ya?ml|Dockerfile|\.dockerignore)$">
+    Require all denied
+</FilesMatch>
