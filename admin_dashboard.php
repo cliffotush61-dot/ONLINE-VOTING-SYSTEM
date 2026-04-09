@@ -348,7 +348,7 @@ $election_state = evote_election_state($conn);
                 <p>Force the election open now. It will still close automatically at the deadline.</p>
                 <button type="submit" class="btn btn-success" style="margin-top:12px;">Open Election</button>
             </form>
-            <a href="admin_settings.php" class="feature-card">
+            <a href="election_settings.php" class="feature-card">
                 <div class="icon">⚙️</div>
                 <h3>Election Settings</h3>
                 <p>Create, open, close, or reset the current election</p>

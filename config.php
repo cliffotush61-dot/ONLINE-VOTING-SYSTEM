@@ -38,19 +38,64 @@ if (!defined('EVOTE_CONFIG_LOADED')) {
         $db = evote_db_config();
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-        $conn = mysqli_connect(
-            $db['host'],
-            $db['user'],
-            $db['password'],
-            $db['database'],
-            $db['port']
-        );
+        $hosts = array_values(array_unique(array_filter([
+            (string) $db['host'],
+            'localhost',
+            '127.0.0.1',
+        ])));
+        $databases = array_values(array_unique(array_filter([
+            (string) $db['database'],
+            strtolower((string) $db['database']),
+            strtoupper((string) $db['database']),
+        ])));
 
-        if (!$conn) {
-            throw new RuntimeException('Database connection failed: ' . mysqli_connect_error());
+        $lastError = null;
+
+        foreach ($hosts as $host) {
+            foreach ($databases as $database) {
+                try {
+                    $conn = mysqli_connect(
+                        $host,
+                        $db['user'],
+                        $db['password'],
+                        $database,
+                        $db['port']
+                    );
+                    mysqli_set_charset($conn, 'utf8mb4');
+                    return $conn;
+                } catch (Throwable $e) {
+                    $lastError = $e;
+
+                    if (stripos($e->getMessage(), 'Unknown database') === false) {
+                        continue;
+                    }
+
+                    try {
+                        $server = mysqli_connect($host, $db['user'], $db['password'], '', $db['port']);
+                        $safeDatabase = str_replace('`', '``', $database);
+                        mysqli_query(
+                            $server,
+                            "CREATE DATABASE IF NOT EXISTS `{$safeDatabase}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+                        );
+                        mysqli_close($server);
+
+                        $conn = mysqli_connect(
+                            $host,
+                            $db['user'],
+                            $db['password'],
+                            $database,
+                            $db['port']
+                        );
+                        mysqli_set_charset($conn, 'utf8mb4');
+                        return $conn;
+                    } catch (Throwable $createError) {
+                        $lastError = $createError;
+                    }
+                }
+            }
         }
 
-        mysqli_set_charset($conn, 'utf8mb4');
-        return $conn;
+        $message = $lastError instanceof Throwable ? $lastError->getMessage() : 'unknown error';
+        throw new RuntimeException('Database connection failed: ' . $message);
     }
 }

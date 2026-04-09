@@ -1,6 +1,7 @@
 <?php
 $page_title = "View Results";
 $compact_admin_layout = true;
+$allow_public_results = true;
 include 'includes/admin_header.php';
 
 if (!function_exists('normalize_position_label')) {

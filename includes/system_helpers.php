@@ -167,7 +167,23 @@ if (!defined('EVOTE_SYSTEM_HELPERS_LOADED')) {
             return null;
         }
 
-        $stmt = mysqli_prepare($conn, "SELECT id, username, password_hash, password FROM admins WHERE id = ? LIMIT 1");
+        $columns = ['id', 'username'];
+        if (evote_has_column($conn, 'admins', 'password_hash')) {
+            $columns[] = 'password_hash';
+        }
+        if (evote_has_column($conn, 'admins', 'password')) {
+            $columns[] = 'password';
+        }
+
+        $quotedColumns = array_map(
+            static fn(string $column): string => '`' . str_replace('`', '``', $column) . '`',
+            $columns
+        );
+
+        $stmt = mysqli_prepare(
+            $conn,
+            'SELECT ' . implode(', ', $quotedColumns) . ' FROM admins WHERE id = ? LIMIT 1'
+        );
         if (!$stmt) {
             return null;
         }

@@ -13,11 +13,6 @@ $admin_nav_href = (($_SESSION['role'] ?? '') === 'admin' && isset($_SESSION['adm
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    if (($_SESSION['role'] ?? '') === 'admin' && isset($_SESSION['admin_id'])) {
-        header("Location: admin_dashboard.php");
-        exit();
-    }
-
     if (($_SESSION['role'] ?? '') === 'student' && isset($_SESSION['student_id'])) {
         header("Location: vote.php");
         exit();

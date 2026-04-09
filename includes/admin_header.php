@@ -3,7 +3,7 @@ require_once __DIR__ . '/app_config.php';
 evote_boot_session();
 include_once __DIR__ . '/../db.php';
 
-if (($_SESSION['role'] ?? '') !== 'admin' || !isset($_SESSION['admin_id'])) {
+if (empty($allow_public_results) && (($_SESSION['role'] ?? '') !== 'admin' || !isset($_SESSION['admin_id']))) {
     header("Location: admin_login.php");
     exit();
 }
@@ -11,6 +11,7 @@ if (($_SESSION['role'] ?? '') !== 'admin' || !isset($_SESSION['admin_id'])) {
 $admin_username = $_SESSION['admin_username'] ?? ($_SESSION['username'] ?? 'Admin');
 $current_page = basename($_SERVER['PHP_SELF']);
 $compact_admin_layout = $compact_admin_layout ?? false;
+$allow_public_results = !empty($allow_public_results);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -523,11 +524,16 @@ $compact_admin_layout = $compact_admin_layout ?? false;
         <div class="admin-logo">📊 Admin Panel</div>
     </div>
     <div class="admin-header-right">
-        <div class="user-badge"><?php echo htmlspecialchars($admin_username); ?></div>
         <div class="header-actions">
             <a href="index.php">Home</a>
-            <a href="admin_dashboard.php">Dashboard</a>
-            <a href="logout.php">Logout</a>
+            <?php if ($allow_public_results): ?>
+                <a href="login.php">Login</a>
+                <a href="admin_login.php">Admin</a>
+            <?php else: ?>
+                <div class="user-badge"><?php echo htmlspecialchars($admin_username); ?></div>
+                <a href="admin_dashboard.php">Dashboard</a>
+                <a href="logout.php">Logout</a>
+            <?php endif; ?>
         </div>
     </div>
 </header>

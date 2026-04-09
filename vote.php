@@ -13,8 +13,8 @@ require_once __DIR__ . '/db.php';
 | ACCESS CONTROL
 |--------------------------------------------------------------------------
 */
-if (($_SESSION['role'] ?? '') === 'admin' && isset($_SESSION['admin_id'])) {
-    echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Admin Redirect</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#07111f 0%,#0b1830 30%,#eef4ff 30%,#f8fbff 100%);min-height:100vh;padding:40px;display:flex;align-items:center;justify-content:center}.card{width:min(720px,100%);background:#fff;border-radius:28px;padding:34px;box-shadow:0 20px 45px rgba(15,23,42,.12);border:1px solid #e2e8f0}.badge{display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-weight:800;margin-bottom:14px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:800;margin-top:18px;margin-right:10px}.btn-primary{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff}.btn-secondary{background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1}</style></head><body><div class='card'><div class='badge'>Admin Access</div><h1 style='margin-bottom:10px;color:#0f172a;'>You are signed in as an administrator</h1><p style='color:#475569;line-height:1.7;'>This page is reserved for students. Use the button below to return to the admin panel.</p><a class='btn btn-primary' href='admin_dashboard.php'>Back to Admin Dashboard</a><a class='btn btn-secondary' href='logout.php'>Logout</a></div></body></html>";
+if (evote_normalize_auth_session($conn) === 'admin') {
+    header('Location: admin_dashboard.php');
     exit();
 }
 

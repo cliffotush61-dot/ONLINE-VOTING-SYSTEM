@@ -6,12 +6,14 @@ require_once __DIR__ . '/includes/app_config.php';
 evote_boot_session();
 include 'db.php';
 
-if (evote_normalize_auth_session($conn) === 'admin') {
+$session_role = evote_normalize_auth_session($conn);
+
+if ($session_role === 'admin') {
     header("Location: admin_dashboard.php");
     exit();
 }
 
-if (($_SESSION['role'] ?? null) !== 'student' || !isset($_SESSION['preview_vote'])) {
+if ($session_role !== 'student' || !isset($_SESSION['preview_vote'])) {
     header("Location: login.php");
     exit();
 }
