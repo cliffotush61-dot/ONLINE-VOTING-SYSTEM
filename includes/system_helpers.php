@@ -1006,6 +1006,80 @@ if (!defined('EVOTE_SYSTEM_HELPERS_LOADED')) {
     }
 
     function evote_ensure_schema(mysqli $conn): void {
+        mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `departments` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `department_name` VARCHAR(100) UNIQUE NOT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `students` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `reg_number` VARCHAR(50) UNIQUE NOT NULL,
+            `full_name` VARCHAR(100) NOT NULL,
+            `password` VARCHAR(255),
+            `department` VARCHAR(100) NOT NULL,
+            `email` VARCHAR(100) UNIQUE,
+            `has_voted` BOOLEAN DEFAULT FALSE,
+            `is_active` BOOLEAN DEFAULT TRUE,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `candidates` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `name` VARCHAR(100) NOT NULL,
+            `reg_number` VARCHAR(50) NOT NULL,
+            `department` VARCHAR(100) NOT NULL,
+            `position` ENUM('male_delegate','female_delegate','departmental_delegate') NOT NULL,
+            `gender` ENUM('Male','Female') NOT NULL,
+            `manifesto` TEXT,
+            `photo` VARCHAR(255),
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `admins` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `username` VARCHAR(50) UNIQUE NOT NULL,
+            `password_hash` VARCHAR(255) NOT NULL,
+            `email` VARCHAR(100),
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `votes` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `student_id` INT NOT NULL,
+            `reg_number` VARCHAR(50) NOT NULL,
+            `department` VARCHAR(100) NOT NULL,
+            `male_delegate_candidate_id` INT,
+            `female_delegate_candidate_id` INT,
+            `departmental_delegate_candidate_id` INT,
+            `vote_hash` VARCHAR(128) NOT NULL,
+            `salt` VARCHAR(32) NOT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `ip_address` VARCHAR(45)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `audit_log` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `action` VARCHAR(100) NOT NULL,
+            `table_name` VARCHAR(50),
+            `record_id` INT,
+            `user_id` INT,
+            `user_type` ENUM('admin','student') NOT NULL,
+            `old_values` TEXT,
+            `new_values` TEXT,
+            `ip_address` VARCHAR(45),
+            `user_agent` TEXT,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `action_hash` VARCHAR(128) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        mysqli_query($conn, "INSERT IGNORE INTO `departments` (`department_name`) VALUES
+            ('Computer Science'), ('Information Technology'), ('Software Engineering'),
+            ('Mechanical Engineering'), ('Civil Engineering'), ('Business Administration'),
+            ('Finance'), ('Marketing'), ('Human Resources'), ('Law')");
+        mysqli_query($conn, "INSERT IGNORE INTO `admins` (`username`,`password_hash`,`email`) VALUES
+            ('admin','$2y$10$vyhZg0JtIgEoyzwLPebiAuIhOEL5NiLc0HFpJ1qZ/8VlCY5ingIZe','admin@school.edu')");
+
         mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `audit_logs` (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `user_role` ENUM('admin','student') NOT NULL,
